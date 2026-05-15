@@ -1,14 +1,15 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-export function createClient() {
-  const cookieStore = cookies()
+export async function createClient() {
+  // We MUST await the cookies in Next.js 15
+  const cookieStore = await cookies()
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('❌ Supabase environment variables are missing in Server Client')
+    throw new Error('❌ Supabase environment variables are missing')
   }
 
   return createServerClient(supabaseUrl, supabaseAnonKey, {
@@ -20,14 +21,14 @@ export function createClient() {
         try {
           cookieStore.set({ name, value, ...options })
         } catch (error) {
-          // Handle session refresh in Server Components
+          // The helper handles this for Server Components
         }
       },
       remove(name: string, options: CookieOptions) {
         try {
           cookieStore.set({ name, value: '', ...options })
         } catch (error) {
-          // Handle session refresh in Server Components
+          // The helper handles this for Server Components
         }
       },
     },
