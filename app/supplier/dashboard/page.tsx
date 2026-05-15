@@ -1,21 +1,20 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
 
 export default async function SupplierDashboard() {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = await createClient()
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  // IMPORTANT: Use getUser() for server-side validation to prevent JWT spoofing.
+  const { data: { user } } = await supabase.auth.getUser()
 
-  // Double-check safety (though middleware handles this)
-  if (!session) redirect('/login');
+  if (!user) {
+    redirect('/login')
+  }
 
   return (
     <div>
-      <h1>Welcome, {session.user.email}</h1>
+      <h1>Welcome, {user.email}</h1>
       {/* Dashboard content here */}
     </div>
-  );
+  )
 }
