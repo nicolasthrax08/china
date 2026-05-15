@@ -6,7 +6,7 @@ const requiredEnvVars = [
 
 requiredEnvVars.forEach(key => {
   if (!process.env[key]) {
-    console.warn(`⚠️ Warning: Missing required env var: ${key}. This may cause the build to fail or the site to crash.`);
+    throw new Error(`❌ Error: Missing required env var: ${key}. Build failed to ensure production stability.`);
   }
 });
 
