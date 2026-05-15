@@ -47,8 +47,8 @@ export interface Database {
           updated_at: string
           name_en: string | null
           name_cn: string | null
-          desc_en: string | null
-          desc_cn: string | null
+          description_en: string | null
+          description_cn: string | null
           price_usd: number | null
           image_url: string | null
         }
@@ -63,8 +63,8 @@ export interface Database {
           updated_at?: string
           name_en?: string | null
           name_cn?: string | null
-          desc_en?: string | null
-          desc_cn?: string | null
+          description_en?: string | null
+          description_cn?: string | null
           price_usd?: number | null
           image_url?: string | null
         }
@@ -79,8 +79,8 @@ export interface Database {
           updated_at?: string
           name_en?: string | null
           name_cn?: string | null
-          desc_en?: string | null
-          desc_cn?: string | null
+          description_en?: string | null
+          description_cn?: string | null
           price_usd?: number | null
           image_url?: string | null
         }

@@ -4,13 +4,13 @@
 ALTER TABLE public.products
 ADD COLUMN IF NOT EXISTS name_en TEXT,
 ADD COLUMN IF NOT EXISTS name_cn TEXT,
-ADD COLUMN IF NOT EXISTS desc_en TEXT,
-ADD COLUMN IF NOT EXISTS desc_cn TEXT,
+ADD COLUMN IF NOT EXISTS description_en TEXT,
+ADD COLUMN IF NOT EXISTS description_cn TEXT,
 ADD COLUMN IF NOT EXISTS price_usd DECIMAL(10,2),
 ADD COLUMN IF NOT EXISTS image_url TEXT;
 
 -- Migration of existing data (if any) could go here
--- UPDATE public.products SET name_en = name, desc_en = description, price_usd = price;
+-- UPDATE public.products SET name_en = name, description_en = description, price_usd = price;
 
 -- Create product-images bucket if it doesn't exist
 INSERT INTO storage.buckets (id, name, public)

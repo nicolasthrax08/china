@@ -12,10 +12,10 @@ export default async function ProductsPage() {
     .order('created_at', { ascending: false });
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-6 text-gray-900">
       <header className="mb-12 text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Products / 我们的产品</h1>
-        <p className="text-xl text-gray-600">Discover premium goods from top Chinese suppliers.</p>
+        <h1 className="text-4xl font-bold mb-4">Our Products / 我们的产品</h1>
+        <p className="text-xl text-gray-600">Discover premium goods from top Chinese suppliers. / 发现来自中国顶尖供应商的优质商品。</p>
       </header>
 
       {products && products.length > 0 ? (
@@ -41,22 +41,22 @@ export default async function ProductsPage() {
 
               <div className="p-6">
                 <div className="mb-4">
-                  <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-lg font-bold group-hover:text-blue-600 transition-colors">
                     {product.name_en || product.name}
                   </h3>
                   <p className="text-sm text-gray-500 font-medium">{product.name_cn}</p>
                 </div>
 
                 <p className="text-gray-600 text-sm mb-6 line-clamp-2 min-h-[40px]">
-                  {product.desc_en || product.description}
+                  {product.description_en || product.description}
                 </p>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-gray-900">
+                  <span className="text-2xl font-bold">
                     ${(product.price_usd || product.price || 0).toFixed(2)}
                   </span>
                   <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors">
-                    View Details
+                    View Details / 查看详情
                   </button>
                 </div>
               </div>
@@ -65,7 +65,7 @@ export default async function ProductsPage() {
         </div>
       ) : (
         <div className="text-center py-24">
-          <p className="text-xl text-gray-500">No products available at the moment. Please check back later.</p>
+          <p className="text-xl text-gray-500">No products available at the moment. Please check back later. / 目前没有可用产品。请稍后再试。</p>
         </div>
       )}
     </div>

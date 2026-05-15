@@ -19,20 +19,20 @@ export default async function SupplierDashboard() {
     .order('created_at', { ascending: false });
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-6 text-gray-900">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Supplier Dashboard</h1>
+        <h1 className="text-3xl font-bold">Supplier Dashboard / 供应商控制面板</h1>
         <Link
           href="/supplier/products/new"
           className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
         >
-          + Add Product
+          + Add Product / 添加产品
         </Link>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-800">Your Inventory</h2>
+          <h2 className="text-xl font-semibold">Your Inventory / 您的库存</h2>
         </div>
 
         {products && products.length > 0 ? (
@@ -40,10 +40,10 @@ export default async function SupplierDashboard() {
             <table className="w-full text-left">
               <thead className="bg-gray-50 text-gray-600 text-sm uppercase">
                 <tr>
-                  <th className="px-6 py-4 font-medium">Product</th>
-                  <th className="px-6 py-4 font-medium">Description (CN)</th>
-                  <th className="px-6 py-4 font-medium">Price (USD)</th>
-                  <th className="px-6 py-4 font-medium">Status</th>
+                  <th className="px-6 py-4 font-medium">Product / 产品</th>
+                  <th className="px-6 py-4 font-medium">Description (CN) / 描述 (中)</th>
+                  <th className="px-6 py-4 font-medium">Price (USD) / 价格 (美元)</th>
+                  <th className="px-6 py-4 font-medium">Status / 状态</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -68,15 +68,15 @@ export default async function SupplierDashboard() {
                           )}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">{product.name_en || product.name}</p>
+                          <p className="font-semibold">{product.name_en || product.name}</p>
                           <p className="text-sm text-gray-500">{product.name_cn}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-sm text-gray-600 line-clamp-1">{product.desc_cn}</p>
+                      <p className="text-sm text-gray-600 line-clamp-1">{product.description_cn}</p>
                     </td>
-                    <td className="px-6 py-4 text-gray-900 font-medium">
+                    <td className="px-6 py-4 font-medium">
                       ${(product.price_usd || product.price || 0).toFixed(2)}
                     </td>
                     <td className="px-6 py-4">
