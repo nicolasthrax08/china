@@ -54,7 +54,7 @@ export default async function SupplierDashboard() {
                         <div className="relative h-12 w-12 rounded-md overflow-hidden bg-gray-100 border border-gray-200">
                           {product.image_url ? (
                             <Image
-                              src={product.image_url}
+                              src={`${product.image_url}?width=600&quality=75`}
                               alt={product.name_en || product.name || ''}
                               fill
                               className="object-cover"

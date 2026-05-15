@@ -1,6 +1,15 @@
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+
+const productSchema = z.object({
+  name_en: z.string().min(2, 'English name is required / 英文名称是必填的'),
+  name_cn: z.string().min(1, 'Chinese name is required / 中文名称是必填的'),
+  description_en: z.string().min(5, 'English description is required / 英文描述是必填的'),
+  description_cn: z.string().min(2, 'Chinese description is required / 中文描述是必填的'),
+  price_usd: z.coerce.number().positive('Price must be positive / 价格必须为正数'),
+});
 
 export default async function NewProductPage() {
   async function createProduct(formData: FormData) {
@@ -13,23 +22,42 @@ export default async function NewProductPage() {
       throw new Error('User not authenticated');
     }
 
-    const nameEn = formData.get('name_en') as string;
-    const nameCn = formData.get('name_cn') as string;
-    const descriptionEn = formData.get('description_en') as string;
-    const descriptionCn = formData.get('description_cn') as string;
-    const priceUsd = parseFloat(formData.get('price_usd') as string);
+    const rawFormData = {
+      name_en: formData.get('name_en'),
+      name_cn: formData.get('name_cn'),
+      description_en: formData.get('description_en'),
+      description_cn: formData.get('description_cn'),
+      price_usd: formData.get('price_usd'),
+    };
+
+    // 1. Validate with Zod
+    const validatedFields = productSchema.safeParse(rawFormData);
+
+    if (!validatedFields.success) {
+      // Flatten errors into a bilingual string
+      const errors = validatedFields.error.flatten().fieldErrors;
+      const errorMessage = Object.values(errors).flat().join('. ');
+      console.error('Validation error:', errors);
+      // In a real app with a proper toast library, we'd handle this more gracefully.
+      // For now, we redirect with an error param.
+      return redirect(`/supplier/products/new?error=${encodeURIComponent(errorMessage)}`);
+    }
+
+    const { name_en, name_cn, description_en, description_cn, price_usd } = validatedFields.data;
     const imageFile = formData.get('image') as File;
 
     let imageUrl = '';
+    let uploadedFilePath = '';
 
+    // 2. Upload image if present
     if (imageFile && imageFile.size > 0) {
       const fileExt = imageFile.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      uploadedFilePath = `${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('product-images')
-        .upload(filePath, imageFile);
+        .upload(uploadedFilePath, imageFile);
 
       if (uploadError) {
         throw uploadError;
@@ -37,27 +65,38 @@ export default async function NewProductPage() {
 
       const { data: { publicUrl } } = supabase.storage
         .from('product-images')
-        .getPublicUrl(filePath);
+        .getPublicUrl(uploadedFilePath);
 
       imageUrl = publicUrl;
     }
 
-    const { error: insertError } = await supabase
-      .from('products')
-      .insert({
-        creator_id: user.id,
-        name_en: nameEn,
-        name_cn: nameCn,
-        description_en: descriptionEn,
-        description_cn: descriptionCn,
-        price_usd: priceUsd,
-        image_url: imageUrl,
-        name: nameEn, // Backwards compatibility if needed
-        price: priceUsd, // Backwards compatibility
-      });
+    // 3. Insert into database
+    try {
+      const { error: insertError } = await supabase
+        .from('products')
+        .insert({
+          creator_id: user.id,
+          name_en: name_en,
+          name_cn: name_cn,
+          description_en: description_en,
+          description_cn: description_cn,
+          price_usd: price_usd,
+          image_url: imageUrl,
+          name: name_en, // Backwards compatibility
+          price: price_usd, // Backwards compatibility
+        });
 
-    if (insertError) {
-      throw insertError;
+      if (insertError) {
+        throw insertError;
+      }
+    } catch (error) {
+      // 4. Cleanup orphaned image on failure
+      if (uploadedFilePath) {
+        await supabase.storage
+          .from('product-images')
+          .remove([uploadedFilePath]);
+      }
+      throw error;
     }
 
     revalidatePath('/supplier/dashboard');
@@ -98,6 +137,7 @@ export default async function NewProductPage() {
           <textarea
             name="description_en"
             rows={3}
+            required
             placeholder="Detailed description of the product in English..."
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           ></textarea>
@@ -108,6 +148,7 @@ export default async function NewProductPage() {
           <textarea
             name="description_cn"
             rows={3}
+            required
             placeholder="产品的详细中文描述..."
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           ></textarea>
