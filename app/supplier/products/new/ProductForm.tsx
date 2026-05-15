@@ -9,7 +9,11 @@ export default function ProductForm() {
   const [state, formAction, isPending] = useActionState(createProduct, initialState);
 
   return (
-    <form action={formAction} className="space-y-6 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+    <form
+      action={formAction}
+      encType="multipart/form-data"
+      className="space-y-6 bg-white p-8 rounded-xl shadow-sm border border-gray-100"
+    >
       {state.error && (
         <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
           {state.error}
