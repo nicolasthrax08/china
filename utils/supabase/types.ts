@@ -45,6 +45,12 @@ export interface Database {
           stock_quantity: number
           created_at: string
           updated_at: string
+          name_en: string | null
+          name_cn: string | null
+          description_en: string | null
+          description_cn: string | null
+          price_usd: number | null
+          image_url: string | null
         }
         Insert: {
           id?: string
@@ -55,6 +61,12 @@ export interface Database {
           stock_quantity?: number
           created_at?: string
           updated_at?: string
+          name_en?: string | null
+          name_cn?: string | null
+          description_en?: string | null
+          description_cn?: string | null
+          price_usd?: number | null
+          image_url?: string | null
         }
         Update: {
           id?: string
@@ -65,6 +77,12 @@ export interface Database {
           stock_quantity?: number
           created_at?: string
           updated_at?: string
+          name_en?: string | null
+          name_cn?: string | null
+          description_en?: string | null
+          description_cn?: string | null
+          price_usd?: number | null
+          image_url?: string | null
         }
       }
       orders: {
