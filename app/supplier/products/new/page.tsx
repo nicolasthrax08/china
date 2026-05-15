@@ -4,11 +4,11 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 const productSchema = z.object({
-  name_en: z.string().min(2, 'English name is required'),
-  name_cn: z.string().min(1, 'Chinese name is required'),
-  description_en: z.string().optional(),
-  description_cn: z.string().optional(),
-  price_usd: z.coerce.number().positive('Price must be positive'),
+  name_en: z.string().min(2, 'English name is required / 英文名称是必填的'),
+  name_cn: z.string().min(1, 'Chinese name is required / 中文名称是必填的'),
+  description_en: z.string().min(5, 'English description is required / 英文描述是必填的'),
+  description_cn: z.string().min(2, 'Chinese description is required / 中文描述是必填的'),
+  price_usd: z.coerce.number().positive('Price must be positive / 价格必须为正数'),
 });
 
 export default async function NewProductPage() {
@@ -34,8 +34,13 @@ export default async function NewProductPage() {
     const validatedFields = productSchema.safeParse(rawFormData);
 
     if (!validatedFields.success) {
-      console.error('Validation error:', validatedFields.error.flatten().fieldErrors);
-      throw new Error('Invalid form data');
+      // Flatten errors into a bilingual string
+      const errors = validatedFields.error.flatten().fieldErrors;
+      const errorMessage = Object.values(errors).flat().join('. ');
+      console.error('Validation error:', errors);
+      // In a real app with a proper toast library, we'd handle this more gracefully.
+      // For now, we redirect with an error param.
+      return redirect(`/supplier/products/new?error=${encodeURIComponent(errorMessage)}`);
     }
 
     const { name_en, name_cn, description_en, description_cn, price_usd } = validatedFields.data;
@@ -47,7 +52,7 @@ export default async function NewProductPage() {
     // 2. Upload image if present
     if (imageFile && imageFile.size > 0) {
       const fileExt = imageFile.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
       uploadedFilePath = `${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -132,6 +137,7 @@ export default async function NewProductPage() {
           <textarea
             name="description_en"
             rows={3}
+            required
             placeholder="Detailed description of the product in English..."
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           ></textarea>
@@ -142,6 +148,7 @@ export default async function NewProductPage() {
           <textarea
             name="description_cn"
             rows={3}
+            required
             placeholder="产品的详细中文描述..."
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           ></textarea>

@@ -25,7 +25,7 @@ export default async function ProductsPage() {
               <div className="relative aspect-square bg-gray-50">
                 {product.image_url ? (
                   <Image
-                    src={`${product.image_url}?width=400&quality=80`}
+                    src={`${product.image_url}?width=600&quality=75`}
                     alt={product.name_en || product.name || ''}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
