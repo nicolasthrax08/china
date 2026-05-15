@@ -1,19 +1,21 @@
-import { createClient } from '@/utils/supabase/server'
-import { redirect } from 'next/navigation'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export default async function SupplierDashboard() {
-  const supabase = await createClient()
+  const supabase = createServerComponentClient({ cookies });
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!user) {
-    redirect('/login')
-  }
+  // Double-check safety (though middleware handles this)
+  if (!session) redirect('/login');
 
   return (
     <div>
-      <h1>Welcome, {user.email}</h1>
+      <h1>Welcome, {session.user.email}</h1>
       {/* Dashboard content here */}
     </div>
-  )
+  );
 }
